@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI Interview Agent</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<h1 class="title">AI Mock Interview Agent</h1>
+
+<div class="container">
+
+<div class="progress-text">
+<span id="progress">Question 1 / 3</span>
+</div>
+
+<div class="question-box">
+<p id="question">{{ question }}</p>
+</div>
+
+<textarea id="answer" placeholder="Type your answer here..."></textarea>
+
+<button onclick="submitAnswer()">Submit Answer</button>
+
+<div class="score-bar-container">
+<div id="score-bar"></div>
+</div>
+
+<div id="result"></div>
+
+<div id="dashboard"></div>
+
+</div>
+
+<script>
+
+let questionNumber = 1
+let totalQuestions = 3
+
+function submitAnswer(){
+
+let answer = document.getElementById("answer").value
+
+fetch("/submit_answer",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({answer:answer})
+
+})
+
+.then(response => response.json())
+.then(data => {
+
+document.getElementById("result").innerHTML =
+"Score: "+data.score+"/10 <br> Feedback: "+data.feedback
+
+
+
+let percentage = (data.score/10)*100
+document.getElementById("score-bar").style.width = percentage + "%"
+
+
+
+if(data.next_question){
+
+questionNumber++
+
+document.getElementById("progress").innerText =
+"Question "+questionNumber+" / "+totalQuestions
+
+document.getElementById("question").innerText = data.next_question
+
+document.getElementById("answer").value = ""
+
+}
+
+
+
+if(data.interview_complete){
+
+document.getElementById("dashboard").innerHTML =
+"<h2>Interview Completed</h2>" +
+"<p>Average Score: <b>"+data.average_score+"</b></p>" +
+"<p>Performance Summary Generated</p>"
+
+}
+
+})
+
+.catch(error=>{
+document.getElementById("result").innerHTML = "Error submitting answer"
+})
+
+}
+
+</script>
+
+</body>
+</html>
