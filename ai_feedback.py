@@ -1,7 +1,7 @@
+import os
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyD_6hAGbJ9HIgZUApYqsjBkISQTEqFnQ3s")
-
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 try:
     model = genai.GenerativeModel("gemini-pro")
 except:
@@ -36,4 +36,5 @@ Provide short professional feedback explaining what was correct and what can be 
         elif score > 4:
             return "Partially correct answer. You explained some concepts but more detail is needed."
         else:
+
             return "The answer is not accurate. Review the concept and include key points in your explanation."
